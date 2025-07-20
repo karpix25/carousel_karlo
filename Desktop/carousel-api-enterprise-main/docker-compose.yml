@@ -1,0 +1,33 @@
+version: '3.8'
+
+services:
+  carousel-api:
+    build: .
+    ports:
+      - "3001:3001"
+    environment:
+      - NODE_ENV=production
+      - CANVAS_WIDTH=1600
+      - CANVAS_HEIGHT=2000
+      - DEFAULT_THEME=minimal
+      - DEFAULT_FONT_FAMILY=Inter
+      - MAX_TEXT_LENGTH=50000
+      - MAX_SLIDES=20
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (res) => { process.exit(res.statusCode === 200 ? 0 : 1) })"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          memory: 1G
+          cpus: '1'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    volumes:
+      # Опционально: монтируем папку с шрифтами
+      - ./assets/fonts:/app/assets/fonts:ro
