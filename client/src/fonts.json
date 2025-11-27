@@ -1,0 +1,44 @@
+[
+  {
+    "label": "Inter",
+    "value": "Inter",
+    "category": "Sans Serif",
+    "fallback": "sans-serif",
+    "googleId": "Inter:wght@300;400;500;600;700"
+  },
+  {
+    "label": "Poppins",
+    "value": "Poppins",
+    "category": "Sans Serif",
+    "fallback": "sans-serif",
+    "googleId": "Poppins:wght@300;400;500;600;700"
+  },
+  {
+    "label": "Montserrat",
+    "value": "Montserrat",
+    "category": "Sans Serif",
+    "fallback": "sans-serif",
+    "googleId": "Montserrat:wght@300;400;500;600;700"
+  },
+  {
+    "label": "Playfair Display",
+    "value": "Playfair Display",
+    "category": "Serif",
+    "fallback": "serif",
+    "googleId": "Playfair+Display:wght@400;500;600;700"
+  },
+  {
+    "label": "Roboto",
+    "value": "Roboto",
+    "category": "Sans Serif",
+    "fallback": "sans-serif",
+    "googleId": "Roboto:wght@300;400;500;700"
+  },
+  {
+    "label": "Oswald",
+    "value": "Oswald",
+    "category": "Display",
+    "fallback": "sans-serif",
+    "googleId": "Oswald:wght@300;400;500;600"
+  }
+]
