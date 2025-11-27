@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useCallback } from 'react';
+import React, { useRef, useCallback } from 'react';
 
 const gridPattern =
   'repeating-linear-gradient(135deg, rgba(255,255,255,0.1) 0, rgba(255,255,255,0.1) 16px, transparent 16px, transparent 32px)';
@@ -42,7 +42,7 @@ export default function Canvas({
   );
 
   const handlePointerUp = useCallback(
-    function onPointerUp(event) {
+    (event) => {
       const interaction = interactionRef.current;
       if (!interaction) {
         return;
@@ -52,10 +52,8 @@ export default function Canvas({
       }
       interaction.captureTarget?.releasePointerCapture?.(interaction.pointerId);
       interactionRef.current = null;
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', onPointerUp);
     },
-    [handlePointerMove]
+    []
   );
 
   const startDrag = useCallback(
@@ -77,18 +75,9 @@ export default function Canvas({
         captureTarget: event.currentTarget,
       };
       event.currentTarget.setPointerCapture?.(event.pointerId);
-      window.addEventListener('pointermove', handlePointerMove);
-      window.addEventListener('pointerup', handlePointerUp);
     },
-    [handlePointerMove, handlePointerUp, onSelect]
+    [onSelect]
   );
-
-  useEffect(() => {
-    return () => {
-      window.removeEventListener('pointermove', handlePointerMove);
-      window.removeEventListener('pointerup', handlePointerUp);
-    };
-  }, [handlePointerMove, handlePointerUp]);
 
   return (
     <div onClick={() => onSelect(null)}>
@@ -122,6 +111,9 @@ export default function Canvas({
                 zIndex: index + 1,
               }}
               onPointerDown={(event) => startDrag(event, el)}
+              onPointerMove={handlePointerMove}
+              onPointerUp={handlePointerUp}
+              onPointerCancel={handlePointerUp}
               onClick={(event) => {
                 event.stopPropagation();
                 onSelect(el.id);
