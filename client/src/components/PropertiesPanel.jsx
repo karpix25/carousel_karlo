@@ -12,6 +12,7 @@ import {
   MoveVertical,
   Type,
   Check,
+  ChevronDown,
 } from 'lucide-react';
 import FONT_OPTIONS, { DEFAULT_FONT, getFontStack } from '../constants/fonts';
 
@@ -51,16 +52,22 @@ export default function PropertiesPanel({ element, onChange }) {
   const currentFontFamily = element.fontFamily || DEFAULT_FONT;
 
   const [showCustomFont, setShowCustomFont] = React.useState(false);
+  const [collapsedSections, setCollapsedSections] = React.useState({});
+
+  const toggleSection = (section) => {
+    setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
 
   return (
     <div className="border rounded-2xl p-4 space-y-6 bg-white">
       {isText && (
         <>
           {/* TEXT STYLE SECTION */}
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <h3 className="text-sm font-bold text-gray-900 uppercase">TEXT STYLE</h3>
-            </div>
+          <CollapsibleSection
+            title="TEXT STYLE"
+            isCollapsed={collapsedSections.textStyle}
+            onToggle={() => toggleSection('textStyle')}
+          >
 
             <div className="space-y-2">
               <label className="text-xs text-gray-500">Font</label>
@@ -217,13 +224,16 @@ export default function PropertiesPanel({ element, onChange }) {
                 <option value="capitalize">Capitalize</option>
               </select>
             </div>
-          </div>
+          </CollapsibleSection>
 
           <hr className="border-gray-100" />
 
           {/* TEXTBOX SECTION */}
-          <div className="space-y-4">
-            <h3 className="text-sm font-bold text-gray-900 uppercase">TEXTBOX</h3>
+          <CollapsibleSection
+            title="TEXTBOX"
+            isCollapsed={collapsedSections.textbox}
+            onToggle={() => toggleSection('textbox')}
+          >
 
             <div className="space-y-1">
               <label className="text-xs text-gray-500">Line Height</label>
@@ -330,13 +340,16 @@ export default function PropertiesPanel({ element, onChange }) {
                 />
               </button>
             </div>
-          </div>
+          </CollapsibleSection>
         </>
       )}
 
       {/* Common Properties for all types */}
-      <div className="space-y-4 pt-4 border-t border-gray-100">
-        <h3 className="text-sm font-bold text-gray-900 uppercase">LAYOUT</h3>
+      <CollapsibleSection
+        title="LAYOUT"
+        isCollapsed={collapsedSections.layout}
+        onToggle={() => toggleSection('layout')}
+      >
         <div className="grid grid-cols-2 gap-3">
           <Field label="X">
             <input
@@ -382,12 +395,15 @@ export default function PropertiesPanel({ element, onChange }) {
             className="w-full accent-purple-600"
           />
         </Field>
-      </div>
+      </CollapsibleSection>
 
       {/* Image Specific */}
       {isImage && (
-        <div className="space-y-4 pt-4 border-t border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900 uppercase">IMAGE</h3>
+        <CollapsibleSection
+          title="IMAGE"
+          isCollapsed={collapsedSections.image}
+          onToggle={() => toggleSection('image')}
+        >
           <Field label="URL">
             <input
               type="text"
@@ -415,13 +431,16 @@ export default function PropertiesPanel({ element, onChange }) {
               className="w-full border rounded-lg px-3 py-2 text-sm"
             />
           </Field>
-        </div>
+        </CollapsibleSection>
       )}
 
       {/* Shape Specific */}
       {isShape && (
-        <div className="space-y-4 pt-4 border-t border-gray-100">
-          <h3 className="text-sm font-bold text-gray-900 uppercase">SHAPE</h3>
+        <CollapsibleSection
+          title="SHAPE"
+          isCollapsed={collapsedSections.shape}
+          onToggle={() => toggleSection('shape')}
+        >
           <Field label="Color">
             <input
               type="color"
@@ -438,7 +457,7 @@ export default function PropertiesPanel({ element, onChange }) {
               className="w-full border rounded-lg px-3 py-2 text-sm"
             />
           </Field>
-        </div>
+        </CollapsibleSection>
       )}
 
       <div className="pt-4 border-t border-gray-100">
@@ -452,6 +471,24 @@ export default function PropertiesPanel({ element, onChange }) {
           />
         </Field>
       </div>
+    </div>
+  );
+}
+
+function CollapsibleSection({ title, isCollapsed, onToggle, children }) {
+  return (
+    <div className="space-y-4">
+      <button
+        onClick={onToggle}
+        className="w-full flex items-center justify-between bg-purple-50 hover:bg-purple-100 rounded-lg px-4 py-3 transition-colors"
+      >
+        <h3 className="text-sm font-bold text-purple-900 uppercase">{title}</h3>
+        <ChevronDown
+          size={20}
+          className={`text-purple-900 transition-transform ${isCollapsed ? '' : 'rotate-180'}`}
+        />
+      </button>
+      {!isCollapsed && <div className="space-y-4 px-1">{children}</div>}
     </div>
   );
 }
