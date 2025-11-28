@@ -233,7 +233,7 @@ function renderElementContent(el) {
 
   return (
     <div
-      className="w-full h-full whitespace-pre-wrap flex"
+      className="w-full h-full flex"
       style={{
         fontSize: el.fontSize || 18,
         color: el.color || '#fff',
@@ -249,9 +249,10 @@ function renderElementContent(el) {
         letterSpacing: typeof el.letterSpacing === 'number' ? `${el.letterSpacing}px` : undefined,
         textTransform: el.textTransform || 'none',
         wordBreak: el.wordBreak ? 'break-all' : 'normal',
+        whiteSpace: 'pre-line',
       }}
     >
-      {el.content || ''}
+      {(el.content_preview || el.content || '').trim()}
     </div>
   );
 }

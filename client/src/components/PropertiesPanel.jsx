@@ -113,6 +113,19 @@ export default function PropertiesPanel({ element, onChange }) {
             </div>
 
             <div className="space-y-2">
+              <label className="text-xs text-gray-500">Content Preview (for testing)</label>
+              <textarea
+                value={element.content_preview || ''}
+                onChange={(e) => onChange({ content_preview: e.target.value })}
+                placeholder="Enter test text to preview styles..."
+                className="w-full border rounded-lg px-3 py-2 text-sm h-20 resize-none"
+              />
+              <p className="text-xs text-gray-400">
+                💡 This text is only for preview. Use "Variable name" to inject real data.
+              </p>
+            </div>
+
+            <div className="space-y-2">
               <label className="text-xs text-gray-500">Color</label>
               <div className="flex gap-2">
                 <div

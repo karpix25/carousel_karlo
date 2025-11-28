@@ -36,7 +36,7 @@ function renderTemplate(template, data = {}) {
         `;
       }
 
-      const textContent = escapeHtml(resolveTextContent(el, data));
+      const textContent = escapeHtml(resolveTextContent(el, data).trim());
       return `
         <div style="${style}
           font-family: ${getFontStackValue(el.fontFamily)};
@@ -54,7 +54,7 @@ function renderTemplate(template, data = {}) {
           letter-spacing: ${formatLetterSpacing(el.letterSpacing)};
           text-transform: ${el.textTransform || 'none'};
           word-break: ${el.wordBreak ? 'break-all' : 'normal'};
-          white-space: pre-wrap;
+          white-space: pre-line;
         ">
           ${textContent}
         </div>
