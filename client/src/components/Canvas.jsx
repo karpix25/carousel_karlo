@@ -239,16 +239,21 @@ function renderElementContent(el) {
       if (part.startsWith('**') && part.endsWith('**')) {
         const content = part.slice(2, -2);
         return (
-          <span
-            key={index}
-            style={{
-              backgroundColor: highlightColor || '#ffeb3b',
-              padding: '2px 6px',
-              borderRadius: '4px',
-            }}
-          >
-            {content}
-          </span>
+          <React.Fragment key={index}>
+            {' '}
+            <span
+              style={{
+                backgroundColor: highlightColor || '#ffeb3b',
+                padding: '3px 8px',
+                borderRadius: '6px',
+                display: 'inline',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {content}
+            </span>
+            {' '}
+          </React.Fragment>
         );
       }
       return part;

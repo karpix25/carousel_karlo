@@ -45,7 +45,7 @@ function renderTemplate(template, data = {}) {
         return parts.map(part => {
           if (part.startsWith('**') && part.endsWith('**')) {
             const content = part.slice(2, -2);
-            return `<span style="background-color: ${highlightColor || '#ffeb3b'}; padding: 2px 6px; border-radius: 4px;">${escapeHtml(content)}</span>`;
+            return ` <span style="background-color: ${highlightColor || '#ffeb3b'}; padding: 3px 8px; border-radius: 6px; display: inline; white-space: nowrap;">${escapeHtml(content)}</span> `;
           }
           return escapeHtml(part);
         }).join('');
