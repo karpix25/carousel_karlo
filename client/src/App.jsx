@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import './App.css';
 import Canvas from './components/Canvas';
 import Toolbar from './components/Toolbar';
@@ -263,6 +263,69 @@ function App() {
     setSizePreset('poster');
   };
 
+  const [isPanning, setIsPanning] = useState(false);
+  const scrollContainerRef = React.useRef(null);
+  const lastMousePos = React.useRef({ x: 0, y: 0 });
+
+  const handleWheel = useCallback((e) => {
+    if (e.ctrlKey || e.metaKey) {
+      e.preventDefault();
+      const delta = -e.deltaY * 0.001;
+      setZoom((prev) => Math.min(Math.max(0.1, prev + delta), 5));
+    }
+    // Otherwise let native scroll happen
+  }, []);
+
+  const [isSpacePressed, setIsSpacePressed] = useState(false);
+
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.code === 'Space' && !e.repeat && e.target.tagName !== 'INPUT' && e.target.tagName !== 'TEXTAREA') {
+        e.preventDefault(); // Prevent scrolling
+        setIsSpacePressed(true);
+      }
+    };
+    const handleKeyUp = (e) => {
+      if (e.code === 'Space') {
+        setIsSpacePressed(false);
+        setIsPanning(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('keyup', handleKeyUp);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener('keyup', handleKeyUp);
+    };
+  }, []);
+
+  const handleMouseDown = useCallback((e) => {
+    // Middle mouse button or Spacebar held
+    if (e.button === 1 || (e.button === 0 && isSpacePressed)) {
+      e.preventDefault();
+      setIsPanning(true);
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+    }
+  }, [isSpacePressed]);
+
+  const handleMouseMove = useCallback((e) => {
+    if (isPanning && scrollContainerRef.current) {
+      const dx = e.clientX - lastMousePos.current.x;
+      const dy = e.clientY - lastMousePos.current.y;
+
+      // Scroll in the opposite direction of drag
+      scrollContainerRef.current.scrollLeft -= dx;
+      scrollContainerRef.current.scrollTop -= dy;
+
+      lastMousePos.current = { x: e.clientX, y: e.clientY };
+    }
+  }, [isPanning]);
+
+  const handleMouseUp = useCallback(() => {
+    setIsPanning(false);
+  }, []);
+
   return (
     <div className="flex flex-col h-screen bg-gray-100">
       <DesignerTopBar
@@ -283,8 +346,17 @@ function App() {
       <div className="flex flex-1 overflow-hidden">
         <Toolbar onAdd={addElement} />
 
-        <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-auto">
+        <div className="flex-1 flex flex-col overflow-hidden relative">
+          <div
+            ref={scrollContainerRef}
+            className="flex-1 overflow-auto bg-gray-200 relative"
+            onWheel={handleWheel}
+            onMouseDown={handleMouseDown}
+            onMouseMove={handleMouseMove}
+            onMouseUp={handleMouseUp}
+            onMouseLeave={handleMouseUp}
+            style={{ cursor: isPanning ? 'grabbing' : isSpacePressed ? 'grab' : 'default' }}
+          >
             <div className="min-h-full w-full flex items-center justify-center p-12">
               <Canvas
                 elements={elements}
@@ -295,6 +367,7 @@ function App() {
                 height={canvasSize.height}
                 zoom={zoom}
                 showGrid={showGrid}
+                isSpacePressed={isSpacePressed}
               />
             </div>
           </div>

@@ -283,7 +283,31 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
                   />
                 </div>
               </div>
-              <p className="text-xs text-gray-400">
+              <div className="grid grid-cols-2 gap-3 mt-2">
+                <Field label="Padding">
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={element.highlightPadding ?? 3}
+                      onChange={handleInputChange('highlightPadding')}
+                      className="w-full border rounded-lg px-3 py-2 text-sm pr-8"
+                    />
+                    <span className="absolute right-3 top-2 text-gray-400 text-xs">px</span>
+                  </div>
+                </Field>
+                <Field label="Radius">
+                  <div className="relative">
+                    <input
+                      type="number"
+                      value={element.highlightRadius ?? 6}
+                      onChange={handleInputChange('highlightRadius')}
+                      className="w-full border rounded-lg px-3 py-2 text-sm pr-8"
+                    />
+                    <span className="absolute right-3 top-2 text-gray-400 text-xs">px</span>
+                  </div>
+                </Field>
+              </div>
+              <p className="text-xs text-gray-400 mt-2">
                 💡 Use **text** in your content to highlight words with this color
               </p>
             </div>
@@ -605,6 +629,66 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
                   className="w-full accent-purple-600"
                 />
                 <div className="text-right text-xs text-gray-500">{element.shadow.blur || 0}px</div>
+              </Field>
+            </>
+          )}
+        </div>
+      </CollapsibleSection>
+
+      {/* Stroke Section */}
+      <CollapsibleSection
+        title="STROKE"
+        isCollapsed={collapsedSections.stroke}
+        onToggle={() => toggleSection('stroke')}
+      >
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <label className="text-xs text-gray-500">Enable Stroke</label>
+            <button
+              onClick={() => onChange({ stroke: element.stroke ? null : { color: '#000000', width: 2 } })}
+              className={`w-12 h-6 rounded-full transition-colors relative ${element.stroke ? 'bg-purple-600' : 'bg-gray-200'}`}
+            >
+              <div className={`absolute top-1 w-4 h-4 rounded-full bg-white transition-transform ${element.stroke ? 'left-7' : 'left-1'}`} />
+            </button>
+          </div>
+
+          {element.stroke && (
+            <>
+              <Field label="Color">
+                <div className="flex gap-2">
+                  <div
+                    className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
+                    style={{ backgroundColor: element.stroke.color || '#000000' }}
+                  >
+                    <input
+                      type="color"
+                      value={element.stroke.color || '#000000'}
+                      onChange={(e) => onChange({ stroke: { ...element.stroke, color: e.target.value } })}
+                      className="opacity-0 w-full h-full cursor-pointer"
+                    />
+                  </div>
+                  <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
+                    <span className="text-gray-400 mr-2">#</span>
+                    <input
+                      type="text"
+                      value={(element.stroke.color || '#000000').replace('#', '').toUpperCase()}
+                      onChange={(e) => onChange({ stroke: { ...element.stroke, color: `#${e.target.value}` } })}
+                      className="bg-transparent w-full outline-none text-sm font-mono"
+                    />
+                  </div>
+                </div>
+              </Field>
+
+              <Field label="Width">
+                <input
+                  type="range"
+                  min="0"
+                  max="20"
+                  value={element.stroke.width || 0}
+                  onChange={(e) => onChange({ stroke: { ...element.stroke, width: parseInt(e.target.value) } })}
+                  className="w-full accent-purple-600"
+                />
+                <div className="text-right text-xs text-gray-500">{element.stroke.width || 0}px</div>
               </Field>
             </>
           )}

@@ -249,6 +249,7 @@ function renderElementContent(el) {
           objectFit: el.fit || 'cover',
           borderRadius: el.borderRadius || 0,
           boxShadow: el.shadow ? `${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${el.shadow.color || '#000000'}` : undefined,
+          border: el.stroke ? `${el.stroke.width}px solid ${el.stroke.color}` : undefined,
         }}
       />
     );
@@ -262,13 +263,14 @@ function renderElementContent(el) {
           backgroundColor: el.backgroundColor || '#333',
           borderRadius: el.borderRadius || 0,
           boxShadow: el.shadow ? `${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${el.shadow.color || '#000000'}` : undefined,
+          border: el.stroke ? `${el.stroke.width}px solid ${el.stroke.color}` : undefined,
         }}
       />
     );
   }
 
   // Parse **text** for highlighting
-  const parseHighlightedText = (text, highlightColor) => {
+  const parseHighlightedText = (text, highlightColor, padding = 3, radius = 6) => {
     if (!text) return '';
     const parts = text.split(/(\*\*.*?\*\*)/g);
     return parts.map((part, index) => {
@@ -280,8 +282,8 @@ function renderElementContent(el) {
             <span
               style={{
                 backgroundColor: highlightColor || '#ffeb3b',
-                padding: '3px 8px',
-                borderRadius: '6px',
+                padding: `${padding}px 8px`,
+                borderRadius: `${radius}px`,
                 display: 'inline',
                 boxDecorationBreak: 'clone',
                 WebkitBoxDecorationBreak: 'clone',
@@ -364,6 +366,7 @@ function renderElementContent(el) {
           alignItems: resolveAlignItems(el.verticalAlign),
           backgroundColor: el.backgroundColor || 'transparent',
           overflow: 'hidden', // Ensure container clips content for measurement
+          border: el.stroke && el.type !== 'text' ? `${el.stroke.width}px solid ${el.stroke.color}` : undefined, // Stroke for container if not text
         }}
       >
         <div
@@ -382,10 +385,11 @@ function renderElementContent(el) {
             textTransform: el.textTransform || 'none',
             wordBreak: el.wordBreak ? 'break-all' : 'normal',
             textShadow: el.shadow ? `${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${el.shadow.color || '#000000'}` : undefined,
+            WebkitTextStroke: el.stroke ? `${el.stroke.width}px ${el.stroke.color}` : undefined,
             ...getResizingStyles(),
           }}
         >
-          {parseHighlightedText((el.content_preview || el.content || '').trim(), el.highlightColor)}
+          {parseHighlightedText((el.content_preview || el.content || '').trim(), el.highlightColor, el.highlightPadding, el.highlightRadius)}
         </div>
       </div>
     );
