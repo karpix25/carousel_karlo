@@ -16,6 +16,7 @@ function renderTemplate(template, data = {}) {
         width: ${el.width}px;
         height: ${el.height}px;
         opacity: ${el.opacity ?? 1};
+        transform: rotate(${el.rotation || 0}deg);
       `;
 
       if (el.type === 'image') {
