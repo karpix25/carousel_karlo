@@ -9,6 +9,30 @@ export default function LayersPanel({
   onMoveLayer,
   onUpdate,
 }) {
+  const [editingId, setEditingId] = React.useState(null);
+  const [tempName, setTempName] = React.useState('');
+
+  const startEditing = (e, layer) => {
+    e.stopPropagation();
+    setEditingId(layer.id);
+    setTempName(layer.name || layer.type.toUpperCase());
+  };
+
+  const saveName = () => {
+    if (editingId) {
+      onUpdate(editingId, { name: tempName });
+      setEditingId(null);
+    }
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === 'Enter') {
+      saveName();
+    } else if (e.key === 'Escape') {
+      setEditingId(null);
+    }
+  };
+
   const ordered = elements
     // ... logic remains same
     .map((el, index) => ({ ...el, originalIndex: index }))
@@ -20,7 +44,7 @@ export default function LayersPanel({
       <header className="flex items-center justify-between mb-3">
         <div>
           <p className="text-sm font-semibold text-gray-800 uppercase tracking-wide">Layers</p>
-          <p className="text-xs text-gray-500">Use arrows to adjust stacking order</p>
+          <p className="text-xs text-gray-500">Double-click to rename</p>
         </div>
         <span className="text-xs text-gray-400">{elements.length}</span>
       </header>
@@ -30,6 +54,8 @@ export default function LayersPanel({
           const isSelected = layer.id === selectedId;
           const isTop = layer.originalIndex === elements.length - 1;
           const isBottom = layer.originalIndex === 0;
+          const isEditing = editingId === layer.id;
+
           return (
             <div
               key={layer.id}
@@ -39,15 +65,37 @@ export default function LayersPanel({
               <button
                 type="button"
                 className="flex-1 text-left"
-                onClick={() => onSelect(layer.id)}
+                onClick={() => !isEditing && onSelect(layer.id)}
               >
                 <div className="flex items-center gap-2">
                   {layer.locked && <Lock size={12} className="text-gray-400" />}
-                  <p className="font-semibold text-gray-800">{layer.name || layer.type.toUpperCase()}</p>
+
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={tempName}
+                      onChange={(e) => setTempName(e.target.value)}
+                      onBlur={saveName}
+                      onKeyDown={handleKeyDown}
+                      autoFocus
+                      className="font-semibold text-gray-800 bg-white border border-purple-300 rounded px-1 min-w-0 w-full focus:outline-none focus:ring-1 focus:ring-purple-500"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  ) : (
+                    <p
+                      className="font-semibold text-gray-800 truncate"
+                      onDoubleClick={(e) => !layer.locked && startEditing(e, layer)}
+                      title="Double-click to rename"
+                    >
+                      {layer.name || layer.type.toUpperCase()}
+                    </p>
+                  )}
                 </div>
-                <p className="text-xs text-gray-500">
-                  {layer.variableName ? `{{${layer.variableName}}}` : `${layer.width}×${layer.height}`}
-                </p>
+                {!isEditing && (
+                  <p className="text-xs text-gray-500">
+                    {layer.variableName ? `{{${layer.variableName}}}` : `${layer.width}×${layer.height}`}
+                  </p>
+                )}
               </button>
               <div className="flex items-center gap-1">
                 <LayerIconButton onClick={() => onUpdate(layer.id, { locked: !layer.locked })}>

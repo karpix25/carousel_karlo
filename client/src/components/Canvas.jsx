@@ -415,20 +415,29 @@ function resolveAlignItems(value = 'top') {
 }
 
 function ResizeHandle({ position, onStart }) {
+  // Offset for 16px (w-4) handle with border is usually -8px to center, 
+  // but let's stick to slight overhang. 
+  // w-4 = 1rem = 16px. Half is 8px.
+  // We want the center of the handle to be on the edge/corner.
+  // top: -8, left: -8 etc.
+
+  const offset = -6; // slightly inside or outside depending on preference, let's try -6 for -1.5 (w-3) visual feel or -8 for full center.
+  // User wanted "enlarge dots". 
+
   const positionStyles = {
-    nw: { top: -4, left: -4, cursor: 'nwse-resize' },
-    ne: { top: -4, right: -4, cursor: 'nesw-resize' },
-    sw: { bottom: -4, left: -4, cursor: 'nesw-resize' },
-    se: { bottom: -4, right: -4, cursor: 'nwse-resize' },
-    n: { top: -4, left: '50%', transform: 'translateX(-50%)', cursor: 'ns-resize' },
-    s: { bottom: -4, left: '50%', transform: 'translateX(-50%)', cursor: 'ns-resize' },
-    w: { top: '50%', left: -4, transform: 'translateY(-50%)', cursor: 'ew-resize' },
-    e: { top: '50%', right: -4, transform: 'translateY(-50%)', cursor: 'ew-resize' },
+    nw: { top: -6, left: -6, cursor: 'nwse-resize' },
+    ne: { top: -6, right: -6, cursor: 'nesw-resize' },
+    sw: { bottom: -6, left: -6, cursor: 'nesw-resize' },
+    se: { bottom: -6, right: -6, cursor: 'nwse-resize' },
+    n: { top: -6, left: '50%', transform: 'translateX(-50%)', cursor: 'ns-resize' },
+    s: { bottom: -6, left: '50%', transform: 'translateX(-50%)', cursor: 'ns-resize' },
+    w: { top: '50%', left: -6, transform: 'translateY(-50%)', cursor: 'ew-resize' },
+    e: { top: '50%', right: -6, transform: 'translateY(-50%)', cursor: 'ew-resize' },
   };
 
   return (
     <div
-      className="absolute w-2 h-2 bg-white border-2 border-purple-600 rounded-full hover:scale-150 transition-transform"
+      className="absolute w-3.5 h-3.5 bg-white border-[3px] border-purple-600 rounded-full hover:scale-125 transition-transform shadow-sm"
       style={positionStyles[position]}
       onPointerDown={onStart}
       onClick={(e) => e.stopPropagation()}
