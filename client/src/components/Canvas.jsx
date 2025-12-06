@@ -201,6 +201,7 @@ export default function Canvas({
                 transform: `rotate(${el.rotation || 0}deg)`,
                 opacity: el.opacity ?? 1,
                 zIndex: index + 1,
+                pointerEvents: el.locked ? 'none' : 'auto',
               }}
               onPointerDown={(event) => startDrag(event, el)}
               onPointerMove={handlePointerMove}
