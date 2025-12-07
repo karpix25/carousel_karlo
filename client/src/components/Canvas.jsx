@@ -325,16 +325,28 @@ function renderElementContent(el) {
   }
 
   if (el.type === 'shape') {
-    const startColor = el.gradient?.start || '#000000';
-    const endColor = el.gradient?.end || '#ffffff';
-    const startOpacity = el.gradient?.startOpacity ?? 1;
-    const endOpacity = el.gradient?.endOpacity ?? 1;
-    const startPos = el.gradient?.startPosition ?? 0;
-    const endPos = el.gradient?.endPosition ?? 100;
-
-    const background = el.gradient?.enabled
-      ? `linear-gradient(${el.gradient.angle || 90}deg, ${hexToRgba(startColor, startOpacity)} ${startPos}%, ${hexToRgba(endColor, endOpacity)} ${endPos}%)`
-      : (el.backgroundColor || '#333');
+    let background;
+    if (el.gradient?.enabled) {
+      if (el.gradient.stops && el.gradient.stops.length > 0) {
+        // New multi-stop format
+        const stopsCSS = [...el.gradient.stops]
+          .sort((a, b) => a.position - b.position)
+          .map(s => `${hexToRgba(s.color, s.opacity)} ${s.position}%`)
+          .join(', ');
+        background = `linear-gradient(${el.gradient.angle || 90}deg, ${stopsCSS})`;
+      } else {
+        // Fallback for legacy format
+        const startColor = el.gradient?.start || '#000000';
+        const endColor = el.gradient?.end || '#ffffff';
+        const startOpacity = el.gradient?.startOpacity ?? 1;
+        const endOpacity = el.gradient?.endOpacity ?? 1;
+        const startPos = el.gradient?.startPosition ?? 0;
+        const endPos = el.gradient?.endPosition ?? 100;
+        background = `linear-gradient(${el.gradient.angle || 90}deg, ${hexToRgba(startColor, startOpacity)} ${startPos}%, ${hexToRgba(endColor, endOpacity)} ${endPos}%)`;
+      }
+    } else {
+      background = el.backgroundColor || '#333';
+    }
 
     return (
       <div

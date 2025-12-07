@@ -14,6 +14,9 @@ import {
   Check,
   ChevronDown,
   RotateCw,
+  Plus,
+  Trash2,
+  ArrowRightLeft,
 } from 'lucide-react';
 import FONT_OPTIONS, { DEFAULT_FONT, getFontStack } from '../constants/fonts';
 
@@ -724,7 +727,20 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
                 Solid
               </button>
               <button
-                onClick={() => onChange({ gradient: { enabled: true, start: element.backgroundColor || '#000000', end: '#ffffff', angle: 90, ...element.gradient } })}
+                onClick={() => {
+                  const defaults = {
+                    start: element.backgroundColor || '#000000',
+                    end: '#ffffff',
+                    angle: 90
+                  };
+                  onChange({
+                    gradient: {
+                      ...defaults,
+                      ...element.gradient,
+                      enabled: true
+                    }
+                  });
+                }}
                 className={`flex-1 text-xs py-1.5 rounded-md transition-all ${element.gradient?.enabled ? 'bg-white shadow text-purple-700 font-medium' : 'text-gray-500'}`}
               >
                 Gradient
@@ -758,114 +774,161 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
               </Field>
             ) : (
               <>
-                <Field label="Start Color">
-                  <div className="flex gap-2 mb-2">
-                    <div
-                      className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
-                      style={{ backgroundColor: element.gradient?.start || '#000000' }}
-                    >
-                      <input
-                        type="color"
-                        value={element.gradient?.start || '#000000'}
-                        onChange={(e) => onChange({ gradient: { ...element.gradient, start: e.target.value } })}
-                        className="opacity-0 w-full h-full cursor-pointer"
-                      />
-                    </div>
-                    <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                      <span className="text-gray-400 mr-2">#</span>
-                      <input
-                        type="text"
-                        value={(element.gradient?.start || '#000000').replace('#', '').toUpperCase()}
-                        onChange={(e) => onChange({ gradient: { ...element.gradient, start: `#${e.target.value}` } })}
-                        className="bg-transparent w-full outline-none text-sm font-mono"
-                      />
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs text-gray-500 w-12">Opacity</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={element.gradient?.startOpacity ?? 1}
-                      onChange={(e) => onChange({ gradient: { ...element.gradient, startOpacity: parseFloat(e.target.value) } })}
-                      className="flex-1 accent-purple-600"
-                    />
-                    <div className="text-xs text-gray-500 w-8 text-right">{Math.round((element.gradient?.startOpacity ?? 1) * 100)}%</div>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <label className="text-xs text-gray-500 w-12">Pos.</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={element.gradient?.startPosition ?? 0}
-                      onChange={(e) => onChange({ gradient: { ...element.gradient, startPosition: parseInt(e.target.value) } })}
-                      className="flex-1 accent-purple-600"
-                    />
-                    <div className="text-xs text-gray-500 w-8 text-right">{element.gradient?.startPosition ?? 0}%</div>
-                  </div>
-                </Field>
-                <Field label="End Color">
-                  <div className="flex gap-2 mb-2">
-                    <div
-                      className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
-                      style={{ backgroundColor: element.gradient?.end || '#ffffff' }}
-                    >
-                      <input
-                        type="color"
-                        value={element.gradient?.end || '#ffffff'}
-                        onChange={(e) => onChange({ gradient: { ...element.gradient, end: e.target.value } })}
-                        className="opacity-0 w-full h-full cursor-pointer"
-                      />
-                    </div>
-                    <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                      <span className="text-gray-400 mr-2">#</span>
-                      <input
-                        type="text"
-                        value={(element.gradient?.end || '#ffffff').replace('#', '').toUpperCase()}
-                        onChange={(e) => onChange({ gradient: { ...element.gradient, end: `#${e.target.value}` } })}
-                        className="bg-transparent w-full outline-none text-sm font-mono"
-                      />
+                {/* Gradient Preview Bar */}
+                <div
+                  className="w-full h-8 rounded-lg border shadow-sm mb-3 relative"
+                  style={{
+                    background: `linear-gradient(90deg, ${(element.gradient?.stops || [
+                      { color: element.gradient?.start || '#000000', opacity: element.gradient?.startOpacity ?? 1, position: element.gradient?.startPosition ?? 0 },
+                      { color: element.gradient?.end || '#ffffff', opacity: element.gradient?.endOpacity ?? 1, position: element.gradient?.endPosition ?? 100 }
+                    ]).sort((a, b) => a.position - b.position)
+                      .map(s => {
+                        const r = parseInt(s.color.slice(1, 3), 16);
+                        const g = parseInt(s.color.slice(3, 5), 16);
+                        const b = parseInt(s.color.slice(5, 7), 16);
+                        return `rgba(${r},${g},${b},${s.opacity}) ${s.position}%`;
+                      }).join(', ')
+                      })`
+                  }}
+                />
+
+                {/* Stops List */}
+                <div className="space-y-3">
+                  <div className="flex items-center justify-between">
+                    <label className="text-xs font-semibold text-gray-700">Stops</label>
+                    <div className="flex gap-1">
+                      <button
+                        onClick={() => {
+                          let stops = element.gradient?.stops || [
+                            { id: '1', color: element.gradient?.start || '#000000', opacity: element.gradient?.startOpacity ?? 1, position: element.gradient?.startPosition ?? 0 },
+                            { id: '2', color: element.gradient?.end || '#ffffff', opacity: element.gradient?.endOpacity ?? 1, position: element.gradient?.endPosition ?? 100 }
+                          ];
+                          // Reverse positions
+                          stops = stops.map(s => ({ ...s, position: 100 - s.position }));
+                          onChange({ gradient: { ...element.gradient, stops } });
+                        }}
+                        className="p-1 hover:bg-gray-200 rounded text-gray-500"
+                        title="Reverse Gradient"
+                      >
+                        <ArrowRightLeft size={14} />
+                      </button>
+                      <button
+                        onClick={() => {
+                          const stops = element.gradient?.stops ? [...element.gradient.stops] : [
+                            { id: Date.now() + '1', color: element.gradient?.start || '#000000', opacity: element.gradient?.startOpacity ?? 1, position: element.gradient?.startPosition ?? 0 },
+                            { id: Date.now() + '2', color: element.gradient?.end || '#ffffff', opacity: element.gradient?.endOpacity ?? 1, position: element.gradient?.endPosition ?? 100 }
+                          ];
+                          // Add new stop at 50%
+                          stops.push({ id: Date.now().toString(), color: '#888888', opacity: 1, position: 50 });
+                          // Sort by position? No, let user control, but maybe sort for rendering?
+                          // Usually UI shows them in order.
+                          onChange({ gradient: { ...element.gradient, stops } });
+                        }}
+                        className="p-1 hover:bg-gray-200 rounded text-gray-500"
+                        title="Add Stop"
+                      >
+                        <Plus size={14} />
+                      </button>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <label className="text-xs text-gray-500 w-12">Opacity</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="1"
-                      step="0.05"
-                      value={element.gradient?.endOpacity ?? 1}
-                      onChange={(e) => onChange({ gradient: { ...element.gradient, endOpacity: parseFloat(e.target.value) } })}
-                      className="flex-1 accent-purple-600"
-                    />
-                    <div className="text-xs text-gray-500 w-8 text-right">{Math.round((element.gradient?.endOpacity ?? 1) * 100)}%</div>
-                  </div>
-                  <div className="flex items-center gap-2 mt-1">
-                    <label className="text-xs text-gray-500 w-12">Pos.</label>
-                    <input
-                      type="range"
-                      min="0"
-                      max="100"
-                      value={element.gradient?.endPosition ?? 100}
-                      onChange={(e) => onChange({ gradient: { ...element.gradient, endPosition: parseInt(e.target.value) } })}
-                      className="flex-1 accent-purple-600"
-                    />
-                    <div className="text-xs text-gray-500 w-8 text-right">{element.gradient?.endPosition ?? 100}%</div>
-                  </div>
-                </Field>
+
+                  {(element.gradient?.stops || [
+                    { id: '1', color: element.gradient?.start || '#000000', opacity: element.gradient?.startOpacity ?? 1, position: element.gradient?.startPosition ?? 0 },
+                    { id: '2', color: element.gradient?.end || '#ffffff', opacity: element.gradient?.endOpacity ?? 1, position: element.gradient?.endPosition ?? 100 }
+                  ])
+                    .sort((a, b) => a.position - b.position)
+                    .map((stop, index, arr) => (
+                      <div key={stop.id || index} className="p-2 bg-gray-50 rounded-lg border border-gray-100 relative group">
+                        <div className="flex items-center gap-2 mb-2">
+                          <div className="w-8 h-8 rounded border shadow-sm overflow-hidden relative">
+                            <input
+                              type="color"
+                              value={stop.color}
+                              onChange={(e) => {
+                                const newStops = (element.gradient?.stops || arr).map(s => s.id === stop.id || (s === stop) ? { ...s, color: e.target.value } : s);
+                                onChange({ gradient: { ...element.gradient, stops: newStops } });
+                              }}
+                              className="opacity-0 w-full h-full cursor-pointer absolute inset-0"
+                            />
+                            <div className="w-full h-full pointer-events-none" style={{ backgroundColor: stop.color }} />
+                          </div>
+                          <div className="flex-1">
+                            <div className="flex items-center gap-2">
+                              <span className="text-gray-400 text-xs">#</span>
+                              <input
+                                type="text"
+                                value={stop.color.replace('#', '').toUpperCase()}
+                                onChange={(e) => {
+                                  const newStops = (element.gradient?.stops || arr).map(s => s.id === stop.id || (s === stop) ? { ...s, color: `#${e.target.value}` } : s);
+                                  onChange({ gradient: { ...element.gradient, stops: newStops } });
+                                }}
+                                className="w-full bg-transparent text-xs font-mono outline-none"
+                              />
+                            </div>
+                          </div>
+                          {arr.length > 2 && (
+                            <button
+                              onClick={() => {
+                                const newStops = arr.filter(s => s !== stop);
+                                onChange({ gradient: { ...element.gradient, stops: newStops } });
+                              }}
+                              className="text-gray-400 hover:text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          )}
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          {/* Position */}
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] text-gray-500 w-6">Pos</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={stop.position}
+                              onChange={(e) => {
+                                const val = Math.min(100, Math.max(0, parseInt(e.target.value) || 0));
+                                const newStops = (element.gradient?.stops || arr).map(s => s.id === stop.id || (s === stop) ? { ...s, position: val } : s);
+                                onChange({ gradient: { ...element.gradient, stops: newStops } });
+                              }}
+                              className="w-full bg-white border rounded px-1 text-xs"
+                            />
+                          </div>
+                          {/* Opacity */}
+                          <div className="flex items-center gap-1">
+                            <span className="text-[10px] text-gray-500 w-6">Opac</span>
+                            <input
+                              type="number"
+                              min="0"
+                              max="100"
+                              value={Math.round(stop.opacity * 100)}
+                              onChange={(e) => {
+                                const val = Math.min(1, Math.max(0, (parseInt(e.target.value) || 0) / 100));
+                                const newStops = (element.gradient?.stops || arr).map(s => s.id === stop.id || (s === stop) ? { ...s, opacity: val } : s);
+                                onChange({ gradient: { ...element.gradient, stops: newStops } });
+                              }}
+                              className="w-full bg-white border rounded px-1 text-xs"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                </div>
+
                 <Field label="Angle">
-                  <input
-                    type="range"
-                    min="0"
-                    max="360"
-                    value={element.gradient?.angle || 90}
-                    onChange={(e) => onChange({ gradient: { ...element.gradient, angle: parseInt(e.target.value) } })}
-                    className="w-full accent-purple-600"
-                  />
-                  <div className="text-right text-xs text-gray-500">{element.gradient?.angle || 90}°</div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="range"
+                      min="0"
+                      max="360"
+                      value={element.gradient?.angle || 90}
+                      onChange={(e) => onChange({ gradient: { ...element.gradient, angle: parseInt(e.target.value) } })}
+                      className="flex-1 accent-purple-600"
+                    />
+                    <div className="text-right text-xs text-gray-500 w-8">{element.gradient?.angle || 90}°</div>
+                  </div>
                 </Field>
               </>
             )}
