@@ -292,11 +292,15 @@ function renderElementContent(el) {
   }
 
   if (el.type === 'shape') {
+    const background = el.gradient?.enabled
+      ? `linear-gradient(${el.gradient.angle || 90}deg, ${el.gradient.start || '#000'}, ${el.gradient.end || '#fff'})`
+      : (el.backgroundColor || '#333');
+
     return (
       <div
         className="w-full h-full"
         style={{
-          backgroundColor: el.backgroundColor || '#333',
+          background: background,
           borderRadius: el.borderRadius || 0,
           boxShadow: el.shadow ? `${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${el.shadow.color || '#000000'}` : undefined,
           border: el.stroke ? `${el.stroke.width}px solid ${el.stroke.color}` : undefined,

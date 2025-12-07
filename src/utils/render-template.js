@@ -54,8 +54,12 @@ function renderTemplate(template, data = {}) {
 
       if (el.type === 'shape') {
         const shadowStyle = el.shadow ? `box-shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${el.shadow.color || '#000000'};` : '';
+        const backgroundStyle = el.gradient?.enabled
+          ? `background: linear-gradient(${el.gradient.angle || 90}deg, ${el.gradient.start || '#000'}, ${el.gradient.end || '#fff'});`
+          : `background-color: ${el.backgroundColor || '#000'};`;
+
         return `
-          <div style="${style} background-color: ${el.backgroundColor || '#000'}; border-radius: ${el.borderRadius || 0
+          <div style="${style} ${backgroundStyle} border-radius: ${el.borderRadius || 0
           }px; ${shadowStyle}"></div>
         `;
       }
