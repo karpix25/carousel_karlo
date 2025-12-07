@@ -1,5 +1,7 @@
 import React from 'react';
 import { ArrowUp, ArrowDown, Copy, Trash2, Lock, Unlock } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
+import Tooltip from './Tooltip';
 
 export default function LayersPanel({
   elements,
@@ -10,6 +12,7 @@ export default function LayersPanel({
   onMoveLayer,
   onUpdate,
 }) {
+  const { t } = useTranslation();
   const [editingId, setEditingId] = React.useState(null);
   const [tempName, setTempName] = React.useState('');
 
@@ -35,17 +38,19 @@ export default function LayersPanel({
   };
 
   const ordered = elements
-    // ... logic remains same
     .map((el, index) => ({ ...el, originalIndex: index }))
     .reverse();
 
   return (
     <section>
-      {/* header ... */}
       <header className="flex items-center justify-between mb-3">
         <div>
-          <p className="text-sm font-semibold text-gray-800 uppercase tracking-wide">Layers</p>
-          <p className="text-xs text-gray-500">Double-click to rename</p>
+          <p className="text-sm font-semibold text-gray-800 uppercase tracking-wide">
+            {t('layers.title')}
+          </p>
+          <p className="text-xs text-gray-500">
+            {t('layers.doubleClickRename') || 'Double-click to rename'}
+          </p>
         </div>
         <span className="text-xs text-gray-400">{elements.length}</span>
       </header>
@@ -86,7 +91,7 @@ export default function LayersPanel({
                     <p
                       className="font-semibold text-gray-800 truncate"
                       onDoubleClick={(e) => !layer.locked && startEditing(e, layer)}
-                      title="Double-click to rename"
+                      title={t('layers.doubleClickRename') || 'Double-click to rename'}
                     >
                       {layer.name || layer.type.toUpperCase()}
                     </p>
@@ -99,28 +104,38 @@ export default function LayersPanel({
                 )}
               </button>
               <div className="flex items-center gap-1">
-                <LayerIconButton onClick={() => onUpdate(layer.id, { locked: !layer.locked })}>
-                  {layer.locked ? <Lock size={14} className="text-red-500" /> : <Unlock size={14} />}
-                </LayerIconButton>
-                <LayerIconButton disabled={isTop} onClick={() => onMoveLayer(layer.id, 'up')}>
-                  <ArrowUp size={14} />
-                </LayerIconButton>
-                <LayerIconButton disabled={isBottom} onClick={() => onMoveLayer(layer.id, 'down')}>
-                  <ArrowDown size={14} />
-                </LayerIconButton>
-                <LayerIconButton onClick={() => onDuplicate(layer.id)}>
-                  <Copy size={14} />
-                </LayerIconButton>
-                <LayerIconButton onClick={() => onDelete(layer.id)}>
-                  <Trash2 size={14} />
-                </LayerIconButton>
+                <Tooltip text={layer.locked ? t('tooltips.layers.unlock') : t('tooltips.layers.lock')}>
+                  <LayerIconButton onClick={() => onUpdate(layer.id, { locked: !layer.locked })}>
+                    {layer.locked ? <Lock size={14} className="text-red-500" /> : <Unlock size={14} />}
+                  </LayerIconButton>
+                </Tooltip>
+                <Tooltip text={t('tooltips.layers.moveUp')}>
+                  <LayerIconButton disabled={isTop} onClick={() => onMoveLayer(layer.id, 'up')}>
+                    <ArrowUp size={14} />
+                  </LayerIconButton>
+                </Tooltip>
+                <Tooltip text={t('tooltips.layers.moveDown')}>
+                  <LayerIconButton disabled={isBottom} onClick={() => onMoveLayer(layer.id, 'down')}>
+                    <ArrowDown size={14} />
+                  </LayerIconButton>
+                </Tooltip>
+                <Tooltip text={t('tooltips.layers.duplicate')}>
+                  <LayerIconButton onClick={() => onDuplicate(layer.id)}>
+                    <Copy size={14} />
+                  </LayerIconButton>
+                </Tooltip>
+                <Tooltip text={t('tooltips.layers.delete')}>
+                  <LayerIconButton onClick={() => onDelete(layer.id)}>
+                    <Trash2 size={14} />
+                  </LayerIconButton>
+                </Tooltip>
               </div>
             </div>
           );
         })}
         {elements.length === 0 && (
           <div className="border border-dashed border-gray-300 rounded-xl px-4 py-6 text-center text-sm text-gray-500">
-            Add elements from the toolbar to start building a layout.
+            {t('layers.noLayers') || 'Add elements from the toolbar to start building a layout.'}
           </div>
         )}
       </div>

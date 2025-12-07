@@ -21,12 +21,15 @@ import {
   Unlink,
 } from 'lucide-react';
 import FONT_OPTIONS, { DEFAULT_FONT, getFontStack } from '../constants/fonts';
+import { useTranslation } from '../hooks/useTranslation';
 
 export default function PropertiesPanel({ element, onChange, canvasSize }) {
+  const { t } = useTranslation();
+
   if (!element) {
     return (
       <div className="border rounded-2xl p-6 text-center text-sm text-gray-500">
-        Select a layer to edit its properties.
+        {t('properties.selectLayer')}
       </div>
     );
   }

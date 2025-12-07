@@ -1,5 +1,6 @@
 import React from 'react';
 import { ChevronDown, Copy, Check } from 'lucide-react';
+import { useTranslation } from '../hooks/useTranslation';
 
 const imageFormats = [
   { label: 'Automatic', value: 'automatic' },
@@ -18,6 +19,7 @@ const pdfQuality = [
 ];
 
 export default function ExportSettingsPanel({ settings, onChange, elements = [], templateId }) {
+  const { t } = useTranslation();
   const [collapsedSections, setCollapsedSections] = React.useState({});
   const [copied, setCopied] = React.useState(false);
 
@@ -52,7 +54,7 @@ export default function ExportSettingsPanel({ settings, onChange, elements = [],
   return (
     <section className="space-y-4">
       <SettingsCard
-        title="Image settings"
+        title={t('export.imageSettings') || 'Image settings'}
         isCollapsed={collapsedSections.image}
         onToggle={() => toggleSection('image')}
       >
@@ -95,7 +97,7 @@ export default function ExportSettingsPanel({ settings, onChange, elements = [],
       </SettingsCard>
 
       <SettingsCard
-        title="PDF settings"
+        title={t('export.pdfSettings') || 'PDF settings'}
         isCollapsed={collapsedSections.pdf}
         onToggle={() => toggleSection('pdf')}
       >
@@ -138,7 +140,7 @@ export default function ExportSettingsPanel({ settings, onChange, elements = [],
       </SettingsCard>
 
       <SettingsCard
-        title="API Integration"
+        title={t('export.apiIntegration') || 'API Integration'}
         isCollapsed={collapsedSections.api}
         onToggle={() => toggleSection('api')}
       >
