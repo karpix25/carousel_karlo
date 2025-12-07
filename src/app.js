@@ -2,13 +2,14 @@ const Router = require("@koa/router");
 const Koa = require("koa");
 const bodyParser = require("koa-body").default;
 const serve = require("koa-static");
+const mount = require("koa-mount");
 const path = require("path");
 const errorHandler = require("./utils/middleware/error-handler");
 const { validateBody } = require("./utils/middleware/validate");
 
 const logger = require("@bedrockio/logger");
 
-const { getBrowser } = require("./utils/browser");
+const { getBrowser, getPageCount } = require("./utils/browser");
 const yd = require("@bedrockio/yada");
 const templatesRouter = require("./routes/templates");
 const foldersRouter = require("./routes/folders");
