@@ -15,6 +15,8 @@ export default function Canvas({
   showGrid,
 }) {
   const interactionRef = useRef(null);
+  const lastThrottleTime = useRef(0);
+  const pendingUpdateRef = useRef(null);
 
   const backgroundStyle = showGrid
     ? {
@@ -35,11 +37,13 @@ export default function Canvas({
       const deltaX = (event.clientX - interaction.startClientX) / zoom;
       const deltaY = (event.clientY - interaction.startClientY) / zoom;
 
+      let updatePayload = null;
+
       if (interaction.type === 'drag') {
         const nextX = clamp(interaction.originX + deltaX, 0, Math.max(0, width - interaction.width));
         const nextY = clamp(interaction.originY + deltaY, 0, Math.max(0, height - interaction.height));
 
-        onUpdate(interaction.id, { x: Math.round(nextX), y: Math.round(nextY) });
+        updatePayload = { x: Math.round(nextX), y: Math.round(nextY) };
 
       } else if (interaction.type === 'resize') {
         const handle = interaction.handle;
@@ -111,12 +115,23 @@ export default function Canvas({
         const newX = interaction.originX + shiftX - finalDW / 2;
         const newY = interaction.originY + shiftY - finalDH / 2;
 
-        onUpdate(interaction.id, {
+        updatePayload = {
           x: Math.round(newX),
           y: Math.round(newY),
           width: newWidth,
           height: newHeight,
-        });
+        };
+      }
+
+      if (updatePayload) {
+        pendingUpdateRef.current = updatePayload;
+        const now = Date.now();
+        // Throttle to ~120fps (8ms)
+        if (now - lastThrottleTime.current >= 8) {
+          onUpdate(interaction.id, updatePayload);
+          lastThrottleTime.current = now;
+          pendingUpdateRef.current = null;
+        }
       }
     },
     [onUpdate, width, height, zoom]
@@ -132,11 +147,17 @@ export default function Canvas({
         return;
       }
 
+      // Flush pending update on release
+      if (pendingUpdateRef.current) {
+        onUpdate(interaction.id, pendingUpdateRef.current);
+        pendingUpdateRef.current = null;
+      }
+
       interactionRef.current = null;
       window.removeEventListener('pointermove', handlePointerMove);
       window.removeEventListener('pointerup', handlePointerUp);
     },
-    [handlePointerMove]
+    [handlePointerMove, onUpdate]
   );
 
   const startDrag = useCallback(
@@ -219,10 +240,11 @@ export default function Canvas({
           className="relative origin-top-left"
           style={{ width, height, transform: `scale(${zoom})`, ...backgroundStyle }}
         >
-          {elements.map((el) => (
+          {elements.map((el, index) => (
             <CanvasLayer
               key={el.id}
               element={el}
+              index={index}
               isSelected={selectedId === el.id}
               onStartDrag={startDrag}
               onStartResize={startResize}
@@ -235,7 +257,7 @@ export default function Canvas({
   );
 }
 
-const CanvasLayer = React.memo(({ element, isSelected, onStartDrag, onSelect, onStartResize }) => {
+const CanvasLayer = React.memo(({ element, index, isSelected, onStartDrag, onSelect, onStartResize }) => {
   return (
     <div
       className={`absolute cursor-move ${isSelected
@@ -250,7 +272,7 @@ const CanvasLayer = React.memo(({ element, isSelected, onStartDrag, onSelect, on
         top: element.y || 0,
         transform: `rotate(${element.rotation || 0}deg)`,
         opacity: element.opacity ?? 1,
-        zIndex: element.id, // Using ID as Z-index? Original map used index+1. 
+        zIndex: index + 1, // Using ID as Z-index? Original map used index+1. 
         // ID is string? If ID is string, zIndex fails.
         // Original code: zIndex: index + 1.
         // I need to pass index to CanvasLayer or handle zIndex.
@@ -294,7 +316,7 @@ const CanvasLayer = React.memo(({ element, isSelected, onStartDrag, onSelect, on
   return (
     prev.element === next.element &&
     prev.isSelected === next.isSelected &&
-    prev.zIndex === next.zIndex // if we add zIndex prop
+    prev.index === next.index // if we add zIndex prop
   );
 });
 
