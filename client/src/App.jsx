@@ -446,7 +446,7 @@ function App() {
 
           <TemplateLibrary
             templates={templates}
-            onLoad={handleLoadTemplate}
+            onLoad={loadTemplate}
             currentTemplateId={currentTemplateId}
             onCreateNew={handleCreateNewTemplate}
             onImport={handleImportHtml}
