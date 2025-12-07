@@ -1,17 +1,18 @@
 const Router = require("@koa/router");
 const Koa = require("koa");
-const bodyParser = require("koa-body").default;
+const bodyParser = require("koa-bodyparser");
 const serve = require("koa-static");
-const mount = require("koa-mount");
 const path = require("path");
 const errorHandler = require("./utils/middleware/error-handler");
 const { validateBody } = require("./utils/middleware/validate");
 
 const logger = require("@bedrockio/logger");
 
-const { getBrowser, getPageCount } = require("./utils/browser");
+const { getBrowser } = require("./utils/browser");
 const yd = require("@bedrockio/yada");
 const templatesRouter = require("./routes/templates");
+const foldersRouter = require("./routes/folders");
+const renderTemplate = require("./utils/render-template");
 
 function urlCustom(value, { root }) {
   if ((value && root.html) || (!value && !root.html)) {
@@ -38,6 +39,8 @@ app.use(mount("/", serve(path.join(__dirname, "../client/dist"))));
 // Templates API
 app.use(templatesRouter.routes());
 app.use(templatesRouter.allowedMethods());
+app.use(foldersRouter.routes());
+app.use(foldersRouter.allowedMethods());
 
 const router = new Router();
 app.router = router;

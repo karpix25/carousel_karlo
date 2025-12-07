@@ -152,4 +152,34 @@ router.post("/render", async (ctx) => {
   }
 });
 
+// Delete template
+router.delete("/:id", async (ctx) => {
+  try {
+    const filePath = getTemplatePath(ctx.params.id);
+    await fs.unlink(filePath);
+    ctx.status = 200;
+    ctx.body = { success: true };
+  } catch (err) {
+    ctx.status = 404;
+    ctx.body = { error: "Template not found" };
+  }
+});
+
+// Move template to folder
+router.put("/:id/move", async (ctx) => {
+  try {
+    const filePath = getTemplatePath(ctx.params.id);
+    const content = await fs.readFile(filePath, "utf-8");
+    const template = JSON.parse(content);
+
+    template.folderId = ctx.request.body.folderId || null;
+
+    await fs.writeFile(filePath, JSON.stringify(template, null, 2));
+    ctx.body = template;
+  } catch (err) {
+    ctx.status = 404;
+    ctx.body = { error: "Template not found" };
+  }
+});
+
 module.exports = router;

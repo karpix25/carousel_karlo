@@ -128,6 +128,21 @@
         "pdfSettings": "Настройки PDF",
         "apiIntegration": "Интеграция API"
     },
+    "folders": {
+        "title": "Шаблоны",
+        "newFolder": "Новая папка",
+        "renameFolder": "Переименовать папку",
+        "deleteFolder": "Удалить папку",
+        "cannotDelete": "Невозможно удалить папку с шаблонами",
+        "moveTemplate": "Переместить шаблон"
+    },
+    "templates": {
+        "delete": "Удалить шаблон",
+        "deleteConfirm": "Удалить \"{name}\"?",
+        "deleteMessage": "Это действие нельзя отменить.",
+        "cancel": "Отмена",
+        "confirmDelete": "Удалить"
+    },
     "tooltips": {
         "toolbar": {
             "text": "Добавить текстовый слой на холст",

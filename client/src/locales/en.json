@@ -128,6 +128,21 @@
         "pdfSettings": "PDF settings",
         "apiIntegration": "API Integration"
     },
+    "folders": {
+        "title": "Templates",
+        "newFolder": "New Folder",
+        "renameFolder": "Rename Folder",
+        "deleteFolder": "Delete Folder",
+        "cannotDelete": "Cannot delete folder with templates",
+        "moveTemplate": "Move Template"
+    },
+    "templates": {
+        "delete": "Delete Template",
+        "deleteConfirm": "Delete \"{name}\"?",
+        "deleteMessage": "This action cannot be undone.",
+        "cancel": "Cancel",
+        "confirmDelete": "Delete"
+    },
     "tooltips": {
         "toolbar": {
             "text": "Add a text layer to your canvas",
