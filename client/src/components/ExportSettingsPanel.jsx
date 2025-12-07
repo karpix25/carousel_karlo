@@ -28,18 +28,44 @@ export default function ExportSettingsPanel({ settings, onChange, elements = [],
   };
 
   const getApiPreview = () => {
-    const variables = elements
-      .filter(el => el.variableName)
-      .reduce((acc, el) => {
-        acc[el.variableName] = el.type === 'image' ? 'https://example.com/image.png' : 'Sample Text';
-        return acc;
-      }, {});
+    const mainVars = {};
+    const colorVars = {};
+
+    elements.forEach(el => {
+      const varName = el.variableName || el.id;
+
+      // Main content variables
+      if (el.variableName) {
+        mainVars[el.variableName] = el.type === 'image'
+          ? 'https://example.com/image.png'
+          : 'Sample Text';
+      }
+
+      // Color variables
+      if (el.colorDynamic) {
+        colorVars[`${varName}_color`] = '#000000';
+      }
+      if (el.backgroundColorDynamic) {
+        colorVars[`${varName}_backgroundColor`] = '#ffffff';
+      }
+      if (el.highlightColorDynamic) {
+        colorVars[`${varName}_highlightColor`] = '#ffeb3b';
+      }
+      if (el.shadowColorDynamic) {
+        colorVars[`${varName}_shadowColor`] = '#000000';
+      }
+      if (el.strokeColorDynamic) {
+        colorVars[`${varName}_strokeColor`] = '#000000';
+      }
+    });
+
+    const allVars = { ...mainVars, ...colorVars };
 
     const url = `${window.location.origin}/templates/${templateId || '{id}'}/render`;
 
     const curl = `curl -X POST "${url}" \\
   -H "Content-Type: application/json" \\
-  -d '${JSON.stringify(variables, null, 2)}' \\
+  -d '${JSON.stringify(allVars, null, 2)}' \\
   --output result.png`;
 
     return curl;

@@ -71,6 +71,7 @@
         "stroke": "STROKE",
         "enableStroke": "Enable Stroke",
         "contourMode": "Contour Mode",
+        "dynamic": "Dynamic",
         "shape": "SHAPE",
         "solid": "Solid",
         "gradient": "Gradient",

@@ -160,31 +160,14 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
               </p>
             </div>
 
-            <div className="space-y-2">
-              <label className="text-xs text-gray-500">{t('properties.color')}</label>
-              <div className="flex gap-2">
-                <div
-                  className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
-                  style={{ backgroundColor: element.color || '#ffffff' }}
-                >
-                  <input
-                    type="color"
-                    value={element.color || '#ffffff'}
-                    onChange={(e) => onChange({ color: e.target.value })}
-                    className="opacity-0 w-full h-full cursor-pointer"
-                  />
-                </div>
-                <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                  <span className="text-gray-400 mr-2">#</span>
-                  <input
-                    type="text"
-                    value={(element.color || '').replace('#', '').toUpperCase()}
-                    onChange={(e) => onChange({ color: `#${e.target.value}` })}
-                    className="bg-transparent w-full outline-none text-sm font-mono"
-                  />
-                </div>
-              </div>
-            </div>
+            <ColorField
+              label={t('properties.color')}
+              value={element.color}
+              onChange={(color) => onChange({ color })}
+              dynamicFlag={element.colorDynamic}
+              onDynamicChange={(checked) => onChange({ colorDynamic: checked })}
+              t={t}
+            />
 
             <div className="grid grid-cols-2 gap-3">
               <div className="space-y-1">
@@ -269,28 +252,14 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
 
             <div className="space-y-2">
               <label className="text-xs text-gray-500">{t('properties.highlighting')}</label>
-              <div className="flex gap-2">
-                <div
-                  className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
-                  style={{ backgroundColor: element.highlightColor || '#ffeb3b' }}
-                >
-                  <input
-                    type="color"
-                    value={element.highlightColor || '#ffeb3b'}
-                    onChange={(e) => onChange({ highlightColor: e.target.value })}
-                    className="opacity-0 w-full h-full cursor-pointer"
-                  />
-                </div>
-                <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                  <span className="text-gray-400 mr-2">#</span>
-                  <input
-                    type="text"
-                    value={(element.highlightColor || '#ffeb3b').replace('#', '').toUpperCase()}
-                    onChange={(e) => onChange({ highlightColor: `#${e.target.value}` })}
-                    className="bg-transparent w-full outline-none text-sm font-mono"
-                  />
-                </div>
-              </div>
+              <ColorField
+                label=""
+                value={element.highlightColor}
+                onChange={(color) => onChange({ highlightColor: color })}
+                dynamicFlag={element.highlightColorDynamic}
+                onDynamicChange={(checked) => onChange({ highlightColorDynamic: checked })}
+                t={t}
+              />
               <div className="grid grid-cols-2 gap-3 mt-2">
                 <Field label="Padding">
                   <div className="relative">
@@ -343,41 +312,20 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
 
             <div className="space-y-2">
               <label className="text-xs text-gray-500">{t('properties.background')}</label>
-              <div className="flex gap-2 items-center">
-                <div
-                  className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0 relative overflow-hidden"
-                  style={{
-                    backgroundColor: element.backgroundColor || 'transparent',
-                    backgroundImage: !element.backgroundColor ? 'linear-gradient(45deg, #ccc 25%, transparent 25%), linear-gradient(-45deg, #ccc 25%, transparent 25%), linear-gradient(45deg, transparent 75%, #ccc 75%), linear-gradient(-45deg, transparent 75%, #ccc 75%)' : 'none',
-                    backgroundSize: '10px 10px',
-                    backgroundPosition: '0 0, 0 5px, 5px -5px, -5px 0px'
-                  }}
-                >
-                  <input
-                    type="color"
-                    value={element.backgroundColor || '#ffffff'}
-                    onChange={(e) => onChange({ backgroundColor: e.target.value })}
-                    className="opacity-0 w-full h-full cursor-pointer"
-                  />
-                </div>
-                <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                  <span className="text-gray-400 mr-2">#</span>
-                  <input
-                    type="text"
-                    value={(element.backgroundColor || '').replace('#', '').toUpperCase()}
-                    onChange={(e) => onChange({ backgroundColor: `#${e.target.value}` })}
-                    placeholder="Transparent"
-                    className="bg-transparent w-full outline-none text-sm font-mono"
-                  />
-                </div>
-                <button
-                  onClick={() => onChange({ backgroundColor: '' })}
-                  className="p-2 text-gray-400 hover:text-red-500"
-                  title="Clear background"
-                >
-                  <span className="text-xs">✕</span>
-                </button>
-              </div>
+              <ColorField
+                label=""
+                value={element.backgroundColor}
+                onChange={(color) => onChange({ backgroundColor: color })}
+                dynamicFlag={element.backgroundColorDynamic}
+                onDynamicChange={(checked) => onChange({ backgroundColorDynamic: checked })}
+                t={t}
+              />
+              <button
+                onClick={() => onChange({ backgroundColor: '' })}
+                className="text-xs text-gray-500 hover:text-red-500"
+              >
+                Clear background
+              </button>
             </div>
 
             <div className="space-y-2">
@@ -577,30 +525,14 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
 
           {element.shadow && (
             <>
-              <Field label="Color">
-                <div className="flex gap-2">
-                  <div
-                    className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
-                    style={{ backgroundColor: element.shadow.color || '#000000' }}
-                  >
-                    <input
-                      type="color"
-                      value={element.shadow.color || '#000000'}
-                      onChange={(e) => onChange({ shadow: { ...element.shadow, color: e.target.value } })}
-                      className="opacity-0 w-full h-full cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                    <span className="text-gray-400 mr-2">#</span>
-                    <input
-                      type="text"
-                      value={(element.shadow.color || '#000000').replace('#', '').toUpperCase()}
-                      onChange={(e) => onChange({ shadow: { ...element.shadow, color: `#${e.target.value}` } })}
-                      className="bg-transparent w-full outline-none text-sm font-mono"
-                    />
-                  </div>
-                </div>
-              </Field>
+              <ColorField
+                label={t('properties.color') || 'Color'}
+                value={element.shadow.color}
+                onChange={(color) => onChange({ shadow: { ...element.shadow, color } })}
+                dynamicFlag={element.shadowColorDynamic}
+                onDynamicChange={(checked) => onChange({ shadowColorDynamic: checked })}
+                t={t}
+              />
 
               <div className="grid grid-cols-2 gap-3">
                 <Field label="X Offset">
@@ -674,30 +606,14 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
 
           {element.stroke && (
             <>
-              <Field label="Color">
-                <div className="flex gap-2">
-                  <div
-                    className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
-                    style={{ backgroundColor: element.stroke.color || '#000000' }}
-                  >
-                    <input
-                      type="color"
-                      value={element.stroke.color || '#000000'}
-                      onChange={(e) => onChange({ stroke: { ...element.stroke, color: e.target.value } })}
-                      className="opacity-0 w-full h-full cursor-pointer"
-                    />
-                  </div>
-                  <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
-                    <span className="text-gray-400 mr-2">#</span>
-                    <input
-                      type="text"
-                      value={(element.stroke.color || '#000000').replace('#', '').toUpperCase()}
-                      onChange={(e) => onChange({ stroke: { ...element.stroke, color: `#${e.target.value}` } })}
-                      className="bg-transparent w-full outline-none text-sm font-mono"
-                    />
-                  </div>
-                </div>
-              </Field>
+              <ColorField
+                label={t('properties.color') || 'Color'}
+                value={element.stroke.color}
+                onChange={(color) => onChange({ stroke: { ...element.stroke, color } })}
+                dynamicFlag={element.strokeColorDynamic}
+                onDynamicChange={(checked) => onChange({ strokeColorDynamic: checked })}
+                t={t}
+              />
 
               <Field label="Width">
                 <input
@@ -1014,6 +930,48 @@ function CollapsibleSection({ title, isCollapsed, onToggle, children }) {
         />
       </button>
       {!isCollapsed && <div className="space-y-4 px-1">{children}</div>}
+    </div>
+  );
+}
+
+// ColorField component with Dynamic checkbox
+function ColorField({ label, value, onChange, dynamicFlag, onDynamicChange, t }) {
+  return (
+    <div className="space-y-2">
+      <label className="text-xs text-gray-500">{label}</label>
+      <div className="flex gap-2">
+        <div
+          className="w-10 h-10 rounded-lg border shadow-sm flex-shrink-0"
+          style={{ backgroundColor: value || '#ffffff' }}
+        >
+          <input
+            type="color"
+            value={value || '#ffffff'}
+            onChange={(e) => onChange(e.target.value)}
+            className="opacity-0 w-full h-full cursor-pointer"
+          />
+        </div>
+        <div className="flex-1 border rounded-lg flex items-center px-3 bg-gray-50">
+          <span className="text-gray-400 mr-2">#</span>
+          <input
+            type="text"
+            value={(value || '').replace('#', '').toUpperCase()}
+            onChange={(e) => onChange(`#${e.target.value}`)}
+            className="bg-transparent w-full outline-none text-sm font-mono"
+          />
+        </div>
+      </div>
+      {onDynamicChange && (
+        <label className="flex items-center gap-2 text-xs text-gray-600 cursor-pointer">
+          <input
+            type="checkbox"
+            checked={dynamicFlag || false}
+            onChange={(e) => onDynamicChange(e.target.checked)}
+            className="w-4 h-4 accent-purple-600 rounded"
+          />
+          {t('properties.dynamic')}
+        </label>
+      )}
     </div>
   );
 }

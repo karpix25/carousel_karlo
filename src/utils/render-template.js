@@ -10,6 +10,39 @@ function hexToRgba(hex, opacity = 1) {
   return `rgba(${r}, ${g}, ${b}, ${opacity})`;
 }
 
+// Helper function to resolve dynamic colors from API data
+function resolveDynamicColors(element, data) {
+  const el = { ...element };
+  const varName = element.variableName || element.id;
+
+  // Text color
+  if (el.colorDynamic && data[`${varName}_color`]) {
+    el.color = data[`${varName}_color`];
+  }
+
+  // Background color
+  if (el.backgroundColorDynamic && data[`${varName}_backgroundColor`]) {
+    el.backgroundColor = data[`${varName}_backgroundColor`];
+  }
+
+  // Highlight color
+  if (el.highlightColorDynamic && data[`${varName}_highlightColor`]) {
+    el.highlightColor = data[`${varName}_highlightColor`];
+  }
+
+  // Shadow color
+  if (el.shadow && el.shadowColorDynamic && data[`${varName}_shadowColor`]) {
+    el.shadow = { ...el.shadow, color: data[`${varName}_shadowColor`] };
+  }
+
+  // Stroke color
+  if (el.stroke && el.strokeColorDynamic && data[`${varName}_strokeColor`]) {
+    el.stroke = { ...el.stroke, color: data[`${varName}_strokeColor`] };
+  }
+
+  return el;
+}
+
 const FONT_MAP = new Map(fontCatalog.map((font) => [font.value, font]));
 
 function renderTemplate(template, data = {}) {
@@ -18,12 +51,20 @@ function renderTemplate(template, data = {}) {
 
   const elementHtml = elements
     .map((el) => {
+      // Resolve content variables (existing logic)
+      if (el.variableName && data[el.variableName] !== undefined) {
+        el = { ...el, content: data[el.variableName] };
+      }
+
+      // NEW: Resolve dynamic colors
+      el = resolveDynamicColors(el, data);
+
       const style = `
 position: absolute;
-left: ${el.x} px;
-top: ${el.y} px;
-width: ${el.width} px;
-height: ${el.height} px;
+left: ${el.x}px;
+top: ${el.y}px;
+width: ${el.width}px;
+height: ${el.height}px;
 opacity: ${el.opacity ?? 1};
 transform: rotate(${el.rotation || 0}deg);
 `;
