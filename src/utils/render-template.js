@@ -89,14 +89,14 @@ transform: rotate(${el.rotation || 0}deg);
           const filters = [];
           if (el.stroke) {
             const { width, color } = el.stroke;
-            filters.push(`drop - shadow(-${width}px 0 0 ${color})`);
-            filters.push(`drop - shadow(${width}px 0 0 ${color})`);
-            filters.push(`drop - shadow(0 - ${width}px 0 ${color})`);
-            filters.push(`drop - shadow(0 ${width}px 0 ${color})`);
+            filters.push(`drop-shadow(-${width}px 0 0 ${color})`);
+            filters.push(`drop-shadow(${width}px 0 0 ${color})`);
+            filters.push(`drop-shadow(0 - ${width}px 0 ${color})`);
+            filters.push(`drop-shadow(0 ${width}px 0 ${color})`);
           }
           if (el.shadow) {
             const shadowColor = hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1);
-            filters.push(`drop - shadow(${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${shadowColor})`);
+            filters.push(`drop-shadow(${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${shadowColor})`);
           }
           if (filters.length > 0) {
             filterStyle = `filter: ${filters.join(' ')}; `;
@@ -104,7 +104,7 @@ transform: rotate(${el.rotation || 0}deg);
         }
 
         // For non-contour mode, apply shadow and border directly to img
-        const imgShadowStyle = (!isContour && el.shadow) ? `box - shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}; ` : '';
+        const imgShadowStyle = (!isContour && el.shadow) ? `box-shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}; ` : '';
         const imgBorderStyle = (!isContour && el.stroke) ? `border: ${el.stroke.width}px solid ${el.stroke.color}; ` : '';
 
         return `
@@ -130,7 +130,7 @@ transform: rotate(${el.rotation || 0}deg);
       }
 
       if (el.type === 'shape') {
-        const shadowStyle = el.shadow ? `box - shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}; ` : '';
+        const shadowStyle = el.shadow ? `box-shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}; ` : '';
 
         let backgroundStyle;
         if (el.gradient?.enabled) {
@@ -139,7 +139,7 @@ transform: rotate(${el.rotation || 0}deg);
               .sort((a, b) => a.position - b.position)
               .map(s => `${hexToRgba(s.color, s.opacity)} ${s.position}% `)
               .join(', ');
-            backgroundStyle = `background: linear - gradient(${el.gradient.angle || 90}deg, ${stopsCSS}); `;
+            backgroundStyle = `background: linear-gradient(${el.gradient.angle || 90}deg, ${stopsCSS}); `;
           } else {
             const startColor = el.gradient.start || '#000000';
             const endColor = el.gradient.end || '#ffffff';
@@ -147,7 +147,7 @@ transform: rotate(${el.rotation || 0}deg);
             const endOpacity = el.gradient.endOpacity ?? 1;
             const startPos = el.gradient.startPosition ?? 0;
             const endPos = el.gradient.endPosition ?? 100;
-            backgroundStyle = `background: linear - gradient(${el.gradient.angle || 90}deg, ${hexToRgba(startColor, startOpacity)} ${startPos} %, ${hexToRgba(endColor, endOpacity)} ${endPos} %); `;
+            backgroundStyle = `background: linear-gradient(${el.gradient.angle || 90}deg, ${hexToRgba(startColor, startOpacity)} ${startPos} %, ${hexToRgba(endColor, endOpacity)} ${endPos} %); `;
             backgroundStyle = `background: linear-gradient(${el.gradient.angle || 90}deg, ${hexToRgba(startColor, startOpacity)} ${startPos}%, ${hexToRgba(endColor, endOpacity)} ${endPos}%); `;
           }
         } else {
@@ -211,8 +211,8 @@ transform: rotate(${el.rotation || 0}deg);
 
       let textContent = parseHighlightedText(rawText, el.highlightColor);
       textContent = parseQuotes(textContent);
-      const shadowStyle = el.shadow ? `text - shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}; ` : '';
-      const strokeStyle = el.stroke ? `- webkit - text - stroke: ${el.stroke.width}px ${el.stroke.color}; ` : '';
+      const shadowStyle = el.shadow ? `text-shadow: ${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}; ` : '';
+      const strokeStyle = el.stroke ? `-webkit-text-stroke: ${el.stroke.width}px ${el.stroke.color}; ` : '';
 
       let resizingStyle = 'white-space: pre-wrap;';
       let fittyClass = '';
