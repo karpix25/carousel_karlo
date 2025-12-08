@@ -160,7 +160,8 @@ transform: rotate(${el.rotation || 0}deg);
   `;
       }
 
-      const rawText = resolveTextContent(el, data).trim();
+      const resolvedText = resolveTextContent(el, data) || '';
+      const rawText = resolvedText.replace(/\\n/g, '\n').trim();
 
       // Parse **text** for highlighting (with mode support)
       const parseHighlightedText = (text, highlightColor) => {
@@ -222,9 +223,10 @@ transform: rotate(${el.rotation || 0}deg);
       } else if (el.resizing === 'clamp') {
         resizingStyle = 'display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;';
       } else if (el.resizing === 'fitty') {
-        resizingStyle = 'white-space: pre-wrap; word-break: break-word;';
+        resizingStyle = 'white-space: pre-wrap; overflow-wrap: anywhere;';
         fittyClass = 'fitty-text';
       }
+      const overflowWrapStyle = `overflow-wrap: ${el.wordBreak ? 'anywhere' : 'normal'};`;
 
       return `
   <div style="${style}
@@ -245,7 +247,8 @@ color: ${el.color || '#000'};
 line-height: ${el.lineHeight || 1.2};
 letter-spacing: ${formatLetterSpacing(el.letterSpacing)};
 text-transform: ${el.textTransform || 'none'};
-word-break: ${el.wordBreak ? 'break-all' : 'normal'};
+word-break: normal;
+${overflowWrapStyle}
             ${resizingStyle}
             ${shadowStyle}
             ${strokeStyle}

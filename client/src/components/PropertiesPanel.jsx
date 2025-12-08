@@ -86,6 +86,11 @@ export default function PropertiesPanel({ element, onChange, canvasSize }) {
     setCollapsedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
 
+  React.useEffect(() => {
+    setCollapsedSections({});
+    setShowCustomFont(false);
+  }, [element?.id]);
+
   return (
     <div className="border rounded-2xl p-4 space-y-6 bg-white">
       {isText && (

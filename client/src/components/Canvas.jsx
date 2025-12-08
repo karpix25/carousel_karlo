@@ -477,13 +477,15 @@ const TextRenderer = ({ el }) => {
     if (el.resizing === 'fitty') {
       return {
         whiteSpace: 'pre-wrap',
-        wordBreak: 'break-word',
       };
     }
     return {
       whiteSpace: 'pre-wrap',
     };
   };
+
+  const processedText = ((el.content_preview || el.content || '')).replace(/\\n/g, '\n').trim();
+  const overflowWrapValue = el.wordBreak ? 'anywhere' : 'normal';
 
   return (
     <div
@@ -510,7 +512,8 @@ const TextRenderer = ({ el }) => {
           fontFamily: getFontStack(el.fontFamily),
           letterSpacing: typeof el.letterSpacing === 'number' ? `${el.letterSpacing}px` : undefined,
           textTransform: el.textTransform || 'none',
-          wordBreak: el.wordBreak ? 'break-all' : 'normal',
+          wordBreak: 'normal',
+          overflowWrap: overflowWrapValue,
           textShadow: el.shadow ? `${el.shadow.x || 0}px ${el.shadow.y || 0}px ${el.shadow.blur || 0}px ${hexToRgba(el.shadow.color || '#000000', el.shadow.opacity ?? 1)}` : undefined,
           WebkitTextStroke: el.stroke ? `${el.stroke.width}px ${el.stroke.color}` : undefined,
           ...getResizingStyles(),
@@ -518,7 +521,7 @@ const TextRenderer = ({ el }) => {
       >
         {parseQuotes(
           parseHighlightedText(
-            (el.content_preview || el.content || '').trim(),
+            processedText,
             el.highlightColor,
             el.highlightPadding,
             el.highlightRadius,
