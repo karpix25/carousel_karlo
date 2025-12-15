@@ -8,6 +8,7 @@ services:
     volumes:
       - ./src:/service/src
       - ./data:/service/data
+      - ./.env:/service/.env
     build:
       context: .
       dockerfile: Dockerfile
